@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>惰性函数</title>
+</head>
+<body>
+<button id="btn">click</button>
+
+<script>
+  // 惰性函数是js函数式编程的另一个应用，
+  // 惰性函数表示函数执行的分支只会在函数第一次调用的时候执行，
+  // 它的应用情景在于当我们遇到一个需要判断场景去调用不同的方法时，
+  // 避免重复进入函数内的if判断，也就是说if判断只进行一次，之后函数就会被分支里的代码替换掉
+  function addEvent(type, element, fn) {
+    if (element.addEventListener) {
+      console.log('addEventListener')
+      addEvent = function(type, element, fn) {
+        element.addEventListener(type, fn, false)
+      }
+    } else if (element.attachEvent) {
+      console.log('attachEvent')
+      addEvent = function(type, element, fn) {
+        element.attachEvent('on' + type, fn)
+      }
+    } else {
+      console.log('on')
+      addEvent = function(type, element, fn) {
+        element['on' + type] = fn
+      }
+    }
+    return addEvent(type, element, fn)
+  }
+
+  var btn = document.getElementById('btn')
+  addEvent('click', btn, function() {
+    console.log('click')
+  })
+  addEvent('mouseover', btn, function() {
+    console.log('mouseover')
+  })
+</script>
+</body>
+</html>

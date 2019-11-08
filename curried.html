@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>偏函数与柯里化</title>
+</head>
+<body>
+<script>
+  // 偏函数--将有多个参数的函数中的某几个参数进行固定
+  // function add(a, b, c) {
+  //   return a + b + c
+  // }
+  function add(a) {
+    return function(b, c) {
+      return a + b + c
+    }
+  }
+  var add5 = add(5)
+  console.log(add5(1, 2)) // 8
+
+  // 柯里化通过偏应用函数实现，只保留一个参数
+  // 传递给函数一部分参数来调用它，让它返回一个函数去处理剩下的参数
+  // 柯里化与偏函数的区别：
+  // 柯里化是将一个多参数函数转换成多个单参数函数，也就是将一个n元函数转换成n个一元函数
+  // 局部应用函数式固定一个函数的一个或者多个（x>=1）参数，也就是将一个n元函数转换成一个n-x元函数
+
+  // var checkage = age => age > 18
+  // console.log(checkage(20))
+  var checkage = min => age => age > min
+  var checkage18 = checkage(18)
+  console.log(checkage18(17)) // false
+  console.log(checkage18(20)) // true
+
+  // 偏应用函数
+  // 问题：1.没有考虑this指向的执行上下文；2.无法补位，调整位置
+  const partial = (fn, ...args) =>
+                  (...moreArgs) =>
+                  fn(...args, ...moreArgs)
+  const add3 = (a, b, c) => a + b + c
+  const fivePlus = partial(add3, 2, 3)
+  console.log(fivePlus(4)) // 9
+
+  function curry(fn) {
+    return function curried(...args) {
+      // fn.length: 形参个数
+      // args.length: 实参个数
+      // console.log(fn.length, args)
+      if (args.length >= fn.length) {
+        return fn.apply(this, args)
+      }
+      // 提供参数小于函数参数（实参个数小于形参个数），返回偏函数
+      return function pass(...args2) {
+        return curried.apply(this, args.concat(args2))
+      }
+    }
+  }
+  function sum(a, b, c) {
+    return a + b + c
+  }
+  const curriedSum = curry(sum)
+  console.log(curriedSum(1)(2)(3)) // 6
+</script>
+</body>
+</html>

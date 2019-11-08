@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>纯函数特性--可缓存</title>
+</head>
+<body>
+<script>
+  {
+    // JSON.stringify针对特殊类型的处理
+    // console.log(JSON.stringify([1, 2, function() {}]))
+    function memoize(func) {
+      const cache = new Map()
+      return function(...args) {
+        const key = JSON.stringify(args)
+        // console.log(key)
+        if (cache.has(key)) {
+          return cache.get(key)
+        }
+        const result = func.apply(this, args)
+        cache.set(key, result)
+        return result
+      }
+    }
+
+    function sum(a, b) {
+      const sum = a + b
+      return sum
+    }
+    function sub(a, b) {
+      const sub = a - b
+      return sub
+    }
+    function calc(a, b, operator) {
+      return operator(a, b)
+    }
+    const memoizedCalc = memoize(calc)
+    console.log(memoizedCalc(1, 2, sum)) // 3
+    console.log(memoizedCalc(1, 2, sub)) // 3
+  }
+</script>
+
+<script>
+  {
+    // lodash
+    function memoize(func, resolver) {
+      if (typeof func !== 'function' || (resolver && typeof resolver !== 'function')) {
+        throw new Error('Expected a function')
+      }
+      const cache = new Map() // 可根据实际情况使用WeakMap或{}
+      return function(...args) {
+        const key = resolver ? resolver.apply(this, args) : args[0]
+        console.log('key:', key)
+        if (cache.has(key)) {
+          return cache.get(key)
+        }
+        const result = func.apply(this, args)
+        cache.set(key, result)
+        return result
+      }
+    }
+
+    function sum(a, b) {
+      const sum = a + b
+      return sum
+    }
+    function sub(a, b) {
+      const sub = a - b
+      return sub
+    }
+    function calc(a, b, operator) {
+      return operator(a, b)
+    }
+    const memoizedCalc = memoize(calc)
+    console.log(memoizedCalc(1, 2, sum)) // 3
+    console.log(memoizedCalc(1, 2, sub)) // 3
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>纯函数</title>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+</head>
+<body>
+<script>
+  // console.log(_.memoize)
+  var object = { 'a': 1, 'b': 2 };
+  var other = { 'c': 3, 'd': 4 };
+  var values = _.memoize(_.values);
+  console.log(values(object)); // [1, 2]
+  console.log(values(other)); // [3, 4]
+
+  object.a = 2;
+  console.log(values(object)); // [1, 2]
+
+  console.log(values.cache.get(object)); // [1, 2]
+  values.cache.set(object, [5, 2]);
+  console.log(values(object)); // [5, 2]
+</script>
+</body>
+</html>
